@@ -5,14 +5,14 @@ Strategy
 The bot trades a single symbol, CBBTC, against a slow exponential
 moving average (the "anchor") of bar closes.
 
-* Anchor: an EMA with span 240.  The first 240 closes are collected
+* Anchor: an EMA with span 150.  The first 150 closes are collected
   and their mean seeds the anchor; from then on the anchor follows
   the usual EMA recurrence on every bar.  One anchor value per bar
   is kept in a history list once the anchor exists.
 
 * Entry (mean reversion): while flat, the bot buys only when the
   close sits far enough *below* the anchor -- a deviation of at
-  least 50 bps -- on the theory that an overshoot to the downside
+  least 80 bps -- on the theory that an overshoot to the downside
   tends to snap back toward the anchor.  Two guards can veto an
   entry: a short cooldown after the previous exit, and a slope
   guard that refuses to buy into a persistently falling anchor
@@ -22,10 +22,10 @@ moving average (the "anchor") of bar closes.
   until the modelled price impact is at most 15 bps.
 
 * Exits (staged): while holding, exits are staged so profits are
-  banked in pieces.  Once the deviation reaches +35 bps, half of
+  banked in pieces.  Once the deviation reaches +50 bps, half of
   the position is sold (first stage).  The remainder is sold in
   full once the deviation reaches +105 bps.  If the first stage
-  has not happened yet, +35 bps already triggers a full exit.
+  has not happened yet, +50 bps already triggers a full exit.
 
 * Hard stop: regardless of the deviation, the whole position is
   sold when the close falls 80 bps or more below the entry price,
@@ -49,9 +49,9 @@ import makefun_bars
 
 SYMBOL = "CBBTC"
 
-SPAN = 240                # EMA span for the anchor, in bars
-ENTRY_BPS = 50            # buy when deviation <= -ENTRY_BPS
-STAGE_EXIT_BPS = 35       # first-stage / unstaged full-exit deviation
+SPAN = 150                # EMA span for the anchor, in bars
+ENTRY_BPS = 80            # buy when deviation <= -ENTRY_BPS
+STAGE_EXIT_BPS = 50       # first-stage / unstaged full-exit deviation
 FULL_EXIT_BPS = 105       # full-exit deviation after the first stage
 STAGE_PCT = 50            # percent of the position sold in stage one
 STOP_BPS = 80             # hard stop below the entry price
